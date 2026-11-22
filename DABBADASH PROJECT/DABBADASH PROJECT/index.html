@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DabbaDash | Operations Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            <div>
+                <h2>Dabba<span>Dash</span></h2>
+                <small>DELIVERY OPERATIONS</small>
+            </div>
+        </div>
+
+        <p class="menu-label">WORKSPACE</p>
+
+        <nav>
+            <a href="#dashboard" class="nav-link active">▦ Dashboard</a>
+            <a href="#orders" class="nav-link">▤ Orders</a>
+            <a href="#riders" class="nav-link">♙ Delivery Riders</a>
+            <a href="#zones" class="nav-link">◎ Delivery Zones</a>
+            <a href="#tracking" class="nav-link">⌖ Customer Tracking</a>
+            <a href="#mapSection" class="nav-link">📍 Live Map</a>
+            <a href="#payoutSection" class="nav-link">₹ Rider Payout</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="status-card">
+                <span class="online-dot"></span>
+                <div>
+                    <strong>Kitchen Online</strong>
+                    <small>All systems operational</small>
+                </div>
+            </div>
+
+            <div class="profile">
+                <div class="avatar">KM</div>
+                <div>
+                    <strong>Kitchen Manager</strong>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content" id="dashboard">
+
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Workspace / Overview</p>
+                <h1>Dashboard Overview</h1>
+                <p class="subheading">Manage your kitchen operations and deliveries.</p>
+            </div>
+
+            <div class="top-actions">
+                <div class="live-indicator">
+                    <span class="online-dot"></span> LIVE SIMULATION
+                </div>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Total Active Orders</span>
+                    <div class="stat-icon orange">▤</div>
+                </div>
+                <h2 id="activeOrders">0</h2>
+                <small>Currently being processed</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>In Kitchen</span>
+                    <div class="stat-icon purple">♨</div>
+                </div>
+                <h2 id="kitchenOrders">0</h2>
+                <small>Orders being prepared</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Average Prep Time</span>
+                    <div class="stat-icon blue">◷</div>
+                </div>
+                <h2>18 <small>min</small></h2>
+                <small>Average kitchen preparation</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Pending Dispatch</span>
+                    <div class="stat-icon green">➤</div>
+                </div>
+                <h2 id="pendingOrders">0</h2>
+                <small>Ready for rider assignment</small>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <div>
+                    <h2>Virtual Restaurant Brands</h2>
+                    <p>Three brands connected to one central kitchen</p>
+                </div>
+            </div>
+
+            <div class="brand-grid">
+                <div class="brand-card">
+                    <div class="brand-emoji">🍛</div>
+                    <div>
+                        <strong>Biryani Box</strong>
+                        <small>Indian Cuisine</small>
+                    </div>
+                    <span class="brand-dot"></span>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-emoji">🍔</div>
+                    <div>
+                        <strong>Burger Den</strong>
+                        <small>Fast Food</small>
+                    </div>
+                    <span class="brand-dot"></span>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-emoji">☕</div>
+                    <div>
+                        <strong>Chai Point</strong>
+                        <small>Beverages & Snacks</small>
+                    </div>
+                    <span class="brand-dot"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="orders">
+            <div class="section-heading">
+                <div>
+                    <h2>Order Management</h2>
+                    <p>Manage incoming orders and delivery status</p>
+                </div>
+                <span class="order-count" id="orderCount">15 ORDERS</span>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search order ID or customer...">
+
+                <select id="brandFilter">
+                    <option value="All">All Brands</option>
+                    <option value="Biryani Box">Biryani Box</option>
+                    <option value="Burger Den">Burger Den</option>
+                    <option value="Chai Point">Chai Point</option>
+                </select>
+
+                <select id="statusFilter">
+                    <option value="All">All Status</option>
+                    <option value="Received">Received</option>
+                    <option value="In Kitchen">In Kitchen</option>
+                    <option value="Packed">Packed</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+            </div>
+
+            <div class="order-board" id="orderBoard"></div>
+        </section>
+
+        <section class="section" id="riders">
+            <div class="section-heading">
+                <div>
+                    <h2>Delivery Rider Console</h2>
+                    <p>Manage available delivery partners</p>
+                </div>
+                <span class="order-count">6 RIDERS</span>
+            </div>
+
+            <div class="rider-grid" id="riderGrid"></div>
+        </section>
+
+        <section class="section" id="zones">
+            <div class="section-heading">
+                <div>
+                    <h2>Hyperlocal Delivery Zones</h2>
+                    <p>Group orders belonging to the same delivery sector</p>
+                </div>
+                <button class="primary-btn" id="batchBtn">+ Group Orders</button>
+            </div>
+
+            <div class="zone-grid" id="zoneGrid"></div>
+
+            <div id="batchResult" class="batch-result">
+                Click "Group Orders" to find orders in the same zone.
+            </div>
+        </section>
+
+        <!-- INTERACTIVE LEAFLET MAP -->
+        <section class="section" id="mapSection">
+            <div class="section-heading">
+                <div>
+                    <h2>Interactive Delivery Map</h2>
+                    <p>Demo rider positions and delivery zones (sample Hyderabad locations)</p>
+                </div>
+                <span class="order-count">LEAFLET MAP</span>
+            </div>
+
+            <div class="map-legend">
+                <span><i class="legend-dot rider-dot"></i> Delivery riders</span>
+                <span><i class="legend-dot order-dot"></i> Active orders</span>
+            </div>
+
+            <div id="deliveryMap" class="delivery-map" role="application" aria-label="Interactive delivery map"></div>
+
+            <p class="map-note">Map pins are illustrative demo coordinates, not live GPS tracking.</p>
+        </section>
+
+        <!-- RIDER PAYOUT CALCULATOR -->
+        <section class="section" id="payoutSection">
+            <div class="section-heading">
+                <div>
+                    <h2>Rider Payout Calculator</h2>
+                    <p>Estimate rider earnings from completed deliveries</p>
+                </div>
+            </div>
+
+            <div class="payout-card">
+                <div class="payout-fields">
+                    <div class="payout-field">
+                        <label for="payoutRider">Select Rider</label>
+                        <select id="payoutRider"></select>
+                    </div>
+
+                    <div class="payout-field">
+                        <label for="payoutPerDelivery">Payment per delivery (₹)</label>
+                        <input type="number" id="payoutPerDelivery" min="0" value="40">
+                    </div>
+
+                    <div class="payout-field">
+                        <label for="payoutBonus">Bonus (₹)</label>
+                        <input type="number" id="payoutBonus" min="0" value="0">
+                    </div>
+
+                    <div class="payout-field">
+                        <label for="payoutDeductions">Deductions (₹)</label>
+                        <input type="number" id="payoutDeductions" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="payout-result">
+                    <div>
+                        <small>COMPLETED DELIVERIES</small>
+                        <strong id="completedDeliveries">0</strong>
+                    </div>
+
+                    <div>
+                        <small>DELIVERY EARNINGS</small>
+                        <strong id="deliveryEarnings">₹0</strong>
+                    </div>
+
+                    <div class="payout-total">
+                        <small>ESTIMATED TOTAL PAYOUT</small>
+                        <strong id="totalPayout">₹0</strong>
+                    </div>
+                </div>
+
+                <button class="primary-btn" id="calculatePayout">Calculate Payout</button>
+                <p class="map-note">Demo calculation only. Actual rider wages may include other company policies.</p>
+            </div>
+        </section>
+
+        <!-- CUSTOMER TRACKING -->
+        <section class="section" id="tracking">
+            <div class="section-heading">
+                <div>
+                    <h2>Customer Order Tracking</h2>
+                    <p>Simulated customer-facing delivery tracker</p>
+                </div>
+            </div>
+
+            <div class="tracking-card">
+                <div class="tracking-header">
+                    <div>
+                        <span class="tracking-label">TRACK YOUR ORDER</span>
+                        <h2 id="trackOrderId">#DD104</h2>
+                    </div>
+
+                    <span class="tracking-status" id="trackStatus">In Kitchen</span>
+                </div>
+
+                <div class="tracking-select">
+                    <label for="trackingSelect">Select Order</label>
+                    <select id="trackingSelect"></select>
+                </div>
+
+                <div class="delivery-animation">
+                    <div class="track-line">
+                        <div class="track-progress" id="trackProgress"></div>
+                    </div>
+                    <div class="scooter" id="scooter">🛵</div>
+                </div>
+
+                <div class="tracking-steps">
+                    <div class="step">
+                        <div class="step-icon">✓</div>
+                        <span>Received</span>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">♨</div>
+                        <span>Kitchen</span>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">▣</div>
+                        <span>Packed</span>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">🛵</div>
+                        <span>On the way</span>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">★</div>
+                        <span>Delivered</span>
+                    </div>
+                </div>
+
+                <div class="tracking-footer">
+                    <div>
+                        <small>DELIVERY PARTNER</small>
+                        <strong id="trackRider">Not Assigned</strong>
+                    </div>
+
+                    <div>
+                        <small>ESTIMATED DELIVERY</small>
+                        <strong id="trackETA">Waiting for dispatch</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 DabbaDash. LastMile Bite Battle.</p>
+            <p>Built with HTML • CSS • JavaScript</p>
+        </footer>
+
+    </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
